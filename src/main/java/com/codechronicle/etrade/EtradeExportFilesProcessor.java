@@ -90,7 +90,7 @@ public class EtradeExportFilesProcessor {
 			// Write rows for categories
 			keys = categoryTotalsMap.keySet();
 			for (String key : keys) {
-				fw.write(key + "," + categoryTotalsMap.get(key) + "\n");
+				fw.write("\"" + key + "\"" + "," + categoryTotalsMap.get(key) + "\n");
 			}
 			
 			log.info("Wrote output file to : " + outputFile.getAbsolutePath());
