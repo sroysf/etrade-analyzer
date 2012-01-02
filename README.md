@@ -1,6 +1,13 @@
 # Overview
 
-This is an overview of this project.
+This is a small utility that takes multiple ETrade portfolio export files and aggregates them into a single output file for analysis.
+
+Investments that appear in multiple accounts show up as a single aggregate amount.
+
+Similarly, the investments are categorized based on the category definitions in resources/categories.props. The category totals are also
+aggregated and added to the output file.
+
+The intent is to then be able to quickly do further overall portfolio analysis by importing the resulting file into Excel. 
 
 # Build
 

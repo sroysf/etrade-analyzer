@@ -3,9 +3,11 @@ package com.codechronicle.etrade;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -13,32 +15,62 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codechronicle.AppMain;
+
 import au.com.bytecode.opencsv.CSVReader;
 
 public class EtradeExportFilesProcessor {
 
 	private static final String DATA_FILE_DIR = "/home/sroy/temp/stocks";
 	private static final String OUTPUT_FILE_NAME = "aggregatePortfolio.csv";
+	private static final String CATEGORIES_FILE_NAME = "categories.props";
 
 	private static Logger log = LoggerFactory.getLogger(EtradeExportFilesProcessor.class);
 
 	private static Map<String,Float> stockInfoMap = new TreeMap<String, Float>();
+	private static Map<String,Float> categoryTotalsMap = new TreeMap<String, Float>();
+	private static Properties categoryInfo = new Properties();
 	
 	public static void execute() {
+		
+		loadCategories();
+		
 		List<File> files = findFiles(DATA_FILE_DIR);
 		for (File file : files) {
 			log.info("Processing file : " + file);
 			processFile(file);
 			
-			log.info("Current map state : " + stockInfoMap);
+			log.info("Stock totals    : " + stockInfoMap);
+			log.info("Category totals : " + categoryTotalsMap);
 			log.info("\n");
 		}
 		
 		generateOutputFile();
 	}
 	
+	private static void loadCategories() {
+
+		InputStream inputStream = null;
+		try {
+	        inputStream = EtradeExportFilesProcessor.class.getClassLoader().getResourceAsStream(CATEGORIES_FILE_NAME);
+
+	        if (inputStream == null) {
+	            throw new RuntimeException("Property file '" + CATEGORIES_FILE_NAME
+	                + "' not found in the classpath");
+	        }
+
+	        categoryInfo.load(inputStream);
+	        
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			if (inputStream != null) {
+				IOUtils.closeQuietly(inputStream);
+			}
+		}
+	}
+
 	private static void generateOutputFile() {
-		Set<String> keys = stockInfoMap.keySet();
 		
 		FileWriter fw = null;
 		
@@ -47,9 +79,18 @@ public class EtradeExportFilesProcessor {
 			File outputFile = new File(dir, OUTPUT_FILE_NAME);
 			
 			fw = new FileWriter(outputFile);
+			Set<String> keys = stockInfoMap.keySet();
 			
 			for (String key : keys) {
 				fw.write(key + "," + stockInfoMap.get(key) + "\n");
+			}
+			
+			fw.write("\n");
+			
+			// Write rows for categories
+			keys = categoryTotalsMap.keySet();
+			for (String key : keys) {
+				fw.write(key + "," + categoryTotalsMap.get(key) + "\n");
 			}
 			
 			log.info("Wrote output file to : " + outputFile.getAbsolutePath());
@@ -96,9 +137,9 @@ public class EtradeExportFilesProcessor {
 	}
 
 	private static void processRow(String[] tokens) {
-		String token = tokens[0];
+		String stockSymbol = tokens[0];
 		
-		Float currentTotal = stockInfoMap.get(token);
+		Float currentTotal = stockInfoMap.get(stockSymbol);
 		if (currentTotal == null) {
 			currentTotal = 0.0f;
 		}
@@ -107,7 +148,21 @@ public class EtradeExportFilesProcessor {
 		
 		currentTotal += rowAmount;
 		
-		stockInfoMap.put(token, currentTotal);
+		stockInfoMap.put(stockSymbol, currentTotal);
+		
+		// Update category totals as well
+		String category = categoryInfo.getProperty(stockSymbol);
+		if (category == null) {
+			category = "Other";
+		}
+		
+		Float currentCategoryTotal = categoryTotalsMap.get(category);
+		if (currentCategoryTotal == null) {
+			currentCategoryTotal = 0.0f;
+		}
+		
+		currentCategoryTotal += rowAmount;
+		categoryTotalsMap.put(category, currentCategoryTotal);
 	}
 
 	private static float findLastFloatValue(String[] tokens) {
