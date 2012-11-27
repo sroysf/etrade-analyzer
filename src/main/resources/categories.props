@@ -1,5 +1,7 @@
 AAPL=Stock
 CRM=Stock
+FOOLX=Risky Expensive Fund
+TMFGX=Risky Expensive Fund
 ACWX=Foreign Large Cap
 ARFCX=Real Estate
 BRLGX=Large Growth
@@ -8,12 +10,15 @@ EEM=Emerging Markets
 IEV=Foreign Large Cap
 IWZ=Large Growth
 PRHSX=Health Care
+QCOM=Stock
 SPY=Large Cap Index
+SVSPX=Large Cap Index
 VEIEX=Emerging Markets
 VMLTX=Bonds
-VNQ=Real Estate
+VNQ=Real Estate Sector
 VTI=Total Market
-XLK=Tech
+XLE=Energy Sector
+XLK=Tech Sector
 XOM=Stock
 SVSPX=Large Cap Index
 
