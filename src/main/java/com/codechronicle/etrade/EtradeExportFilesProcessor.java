@@ -21,7 +21,7 @@ import au.com.bytecode.opencsv.CSVReader;
 
 public class EtradeExportFilesProcessor {
 
-	private static final String DATA_FILE_DIR = "/home/sroy/temp/stocks";
+	private static final String DATA_FILE_DIR = "/home/sroy/tmp/etrade";
 	private static final String OUTPUT_FILE_NAME = "aggregatePortfolio.csv";
 	private static final String CATEGORIES_FILE_NAME = "categories.props";
 
@@ -153,6 +153,7 @@ public class EtradeExportFilesProcessor {
 		// Update category totals as well
 		String category = categoryInfo.getProperty(stockSymbol);
 		if (category == null) {
+            log.info("Uncategorized symbol encountered: " + stockSymbol);
 			category = "Other";
 		}
 		
