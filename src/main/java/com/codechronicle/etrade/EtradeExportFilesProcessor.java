@@ -82,7 +82,7 @@ public class EtradeExportFilesProcessor {
 			Set<String> keys = stockInfoMap.keySet();
 			
 			for (String key : keys) {
-				fw.write(key + "," + stockInfoMap.get(key) + "\n");
+				fw.write(String.format("%s,%s,%s\n", key, stockInfoMap.get(key), categoryInfo.getProperty(key)));
 			}
 			
 			fw.write("\n");
