@@ -7,7 +7,7 @@
   <packaging>jar</packaging>
   
   <properties>
-      <java.version>1.6</java.version>
+      <java.version>1.8</java.version>
       <org.slf4j-version>1.5.10</org.slf4j-version>
   </properties>
   
