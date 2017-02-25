@@ -116,6 +116,7 @@ public class EtradeExportFilesProcessor {
 			boolean processingHeaders = true;
 			for (String[] tokens : csvContents) {
 				String symbol = tokens[0];
+
 				if (processingHeaders) {
 					if (symbol.trim().equalsIgnoreCase("Symbol")) {
 						processingHeaders = false;
@@ -192,8 +193,11 @@ public class EtradeExportFilesProcessor {
 	}
 
 	private static boolean shouldIgnoreRow(String symbol) {
-		return (symbol.trim().length() == 0) || ("N/A".equals(symbol))
-				|| isDate(symbol);
+		return (symbol.trim().length() == 0) ||
+				("N/A".equals(symbol)) ||
+				("TOTAL".equals(symbol)) ||
+				symbol.startsWith("Generated") ||
+				isDate(symbol);
 	}
 
 	private static boolean isDate(String symbol) {
